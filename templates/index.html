@@ -1,95 +1,201 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Machine Learning Project</title>
-	<style>
-		body {
-			background-color: #f8f8f8;
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			background-image: url(../static/pics/ai_back.jpg);
-			background-size: 80%;
+    <title>Product Demand Forecasting</title>
+    <style>
+        body {
+            background-color: #f8f8f8;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url(../static/pics/ai_back.jpg);
+            background-size: 80%;
             background-repeat: no-repeat;
             background-position: right;
-		}
-		.container {
-			margin: 0 auto;
-			max-width: 800px;
-			padding: 20px;
-			box-sizing: border-box;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			min-height: 100vh;
-			margin-top: -50px;
-			margin-left: -10px;
-		}
-		h1 {
-			color: #333;
-			font-size: 48px;
-			font-weight: bold;
-			margin-bottom: 20px;
-			text-align: center;
-		}
-		p {
-			color: #666;
-			font-size: 24px;
-			margin-bottom: 40px;
-			text-align: center;
-		}
-		form {
-			background-color: #fff;
-			max-width: 500px;
-			padding: 40px;
-			border-radius: 10px;
-			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-		}
-		label {
-			display: block;
-			margin-bottom: 10px;
-			color: #666;
-			font-size: 18px;
-			font-weight: bold;
-		}
-		input[type="submit"] {
-			background-color: #4CAF50;
-			border: none;
-			color: #fff;
-			padding: 12px 24px;
-			font-size: 18px;
-			border-radius: 5px;
-			cursor: pointer;
-			margin-top: 20px;
-			transition: background-color 0.2s ease-in-out;
-			/* margin-left: 28%; */
-		}
-		input[type="submit"]:hover {
-			background-color: #3e8e41;
-		}
-		.content p{
-			margin-top: 50px;
-			font-size: 18px;
-			color: black;
-		}
-	</style>
+        }
+        .container {
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin-top: -50px;
+            margin-left: -10px;
+        }
+        h1 {
+            color: #333;
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            color: #666;
+            font-size: 24px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        form {
+            background-color: #fff;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            border: none;
+            color: #fff;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s ease-in-out;
+            /* margin-left: 28%; */
+        }
+        input[type="submit"]:hover {
+            background-color: #3e8e41;
+        }
+        .content p{
+            margin-top: 50px;
+            font-size: 18px;
+            color: black;
+        }
+        table {
+            margin-top: 30px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 50px;
+        }
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-	<div class="container">
-		<h1>Product Demand Forecasting</h1>
-		<p>Please Enter the following details</p>
-		<form action="/" method="post">
-			<label for="total_price">Total Price:</label>
-			<input type="number" name="total_price" id="total_price">
-			<label for="base_price" style="margin-top: 20px;">Base Price:</label>
-			<input type="number" name="base_price" id="base_price">
-			<center><input type="submit" value="Submit"></center>
-		</form>
-		<form style="margin-top:30px; width : 170px">
-			<label>Result:</label>
-			<output id="result">Approximately {{prediction}} products will be sold</output></form>
-	</div>
-</body> 
-</html>
+    <div class="container">
+        <h1>Product Demand Forecasting</h1>
+        <p>Please enter the following details</p>
+        <form action="/" method="post">
+            <label for="base_price" style="margin-top: 20px;">Base Price:</label>
+            <input type="number" min="0" name="base_price" id="base_price">
+            <center><input type="submit" value="Submit"></center>
+        </form>
+        
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
 
+        <table>
+            <tr>
+                <th>Percentage</th>
+                <th>Total Price</th>
+                <th>Units sold</th>
+                <th>Gross Profit / Loss</th>
+            </tr>
+            <tr>
+                <td>25%</td>
+                <td>{{rate1}}</td>
+                <td>{{ q1 }}</td>
+                <td>{{ (rate1 - rate4) * q1 }}</td>
+            </tr>
+            <tr>
+                <td>50%</td>
+                <td>{{rate2}}</td>
+                <td>{{ median }}</td>
+                <td>{{ (rate2 - rate4) * median }}</td>
+            </tr>
+            <tr>
+                <td>75%</td>
+                <td>{{rate3}}</td>
+                <td>{{ q3 }}</td>
+                <td>{{ (rate3 - rate4) * q3 }}</td>
+            </tr>
+            <tr>
+                <td>Same</td>
+                <td>{{rate4}}</td>
+                <td>{{ q4 }}</td>
+                <td>{{ (rate4 - rate4) * q4 }}</td>
+            </tr>
+            <tr>
+                <td>125%</td>
+                <td>{{rate5}}</td>
+                <td>{{ q5 }}</td>
+                <td>{{ (rate5 - rate4) * q5 }}</td>
+            </tr>
+            <tr>
+                <td>150%</td>
+                <td>{{rate6}}</td>
+                <td>{{ q6 }}</td>
+                <td>{{ (rate6 - rate4) * q6 }}</td>
+            </tr>
+            <tr>
+                <td>175%</td>
+                <td>{{rate7}}</td>
+                <td>{{ q7 }}</td>
+                <td>{{ (rate7 - rate4) * q7 }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // Retrieve the values of "q" from the HTML and store them in an array
+        const qValues = [
+            {{ (rate1 - rate4) * q1 }},
+            {{ (rate2 - rate4) * median }},
+            {{ (rate3 - rate4) * q3 }},
+            {{ (rate4 - rate4) * q4 }},
+            {{ (rate5 - rate4) * q5 }},
+            {{ (rate6 - rate4) * q6 }},
+            {{ (rate7 - rate4) * q7 }}
+        ];
+
+        // Create a chart using Chart.js
+        const ctx = document.getElementById('chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['25%', '50%', '75%', 'Same', '125%', '150%', '175%'],
+                datasets: [{
+                    label: 'Profit',
+                    data: qValues,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

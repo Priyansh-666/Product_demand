@@ -1,0 +1,1 @@
+base_price = float(request.form['base_price'])
